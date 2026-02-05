@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Orders</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/dark.css" id="dark">
+</head>
+<body>
+
+<header class="top">
+  <a href="index.html" style="color:white;text-decoration:none;">← All</a>
+  <h1>Orders</h1>
+  <div class="header-controls">
+    <button onclick="toggleTheme()">🌙</button>
+  </div>
+</header>
+
+<main id="orders"></main>
+
+<script src="js/data.js"></script>
+<script src="js/theme.js"></script>
+<script src="js/ui.js"></script>
+<script>
+const container = document.getElementById('orders');
+function renderOrdersPage(){
+  const orders = JSON.parse(localStorage.getItem('orders'))||[];
+  if(orders.length===0){ container.innerHTML = '<div class="empty">No orders yet</div>'; return; }
+  let html = '<div class="orders-list">';
+  const all = (typeof getAllFoods==='function')? getAllFoods() : [];
+  orders.forEach(o=>{
+    html += `<div class="order-block"><div class="order-meta">Order #${o.id} — ${new Date(o.created).toLocaleString()} ${o.total? ' — Total: $'+parseFloat(o.total).toFixed(2):''}</div>`;
+    o.items.forEach(it=>{ const f = all.find(x=>String(x.id)===String(it.id))||{}; html += `<div class="order-item">${f.name||'Item'} × ${it.qty||1} ${it.price? ' @ $'+parseFloat(it.price).toFixed(2):''}</div>`; });
+    html += '</div>';
+  });
+  html += '</div>';
+  container.innerHTML = html;
+}
+renderOrdersPage();
+</script>
+</body>
+</html>

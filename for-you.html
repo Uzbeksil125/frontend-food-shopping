@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>For You</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/dark.css" id="dark">
+</head>
+<body>
+
+<header class="top">
+  <a href="index.html" style="color:white;text-decoration:none;">← All</a>
+  <h1>For You</h1>
+  <div class="header-controls">
+    <button onclick="toggleTheme()">🌙</button>
+    <div id="cart-root"></div>
+  </div>
+</header>
+
+<main id="foods"></main>
+
+<script src="js/data.js"></script>
+<script src="js/theme.js"></script>
+<script src="js/ui.js"></script>
+<script>
+// Render most-ordered items into #foods
+(function(){
+  const all = getAllFoods();
+  const orders = JSON.parse(localStorage.getItem('orders'))||[];
+  const counts = {};
+  orders.forEach(o=>{ (o.items||[]).forEach(it=>{ counts[String(it.id)] = (counts[String(it.id)]||0) + (it.qty||0); }); });
+  const ids = Object.keys(counts).sort((a,b)=>counts[b]-counts[a]);
+  const foods = ids.map(id=> all.find(x=>String(x.id)===String(id))).filter(Boolean);
+  const box = document.getElementById('foods');
+  if(foods.length===0){ box.innerHTML = '<div class="empty">No recommendations yet</div>'; return; }
+  box.innerHTML = '';
+  foods.forEach(f=> box.innerHTML += cardHTML(f));
+  updateCardStates();
+  if(typeof ensureAddButtons==='function') ensureAddButtons();
+})();
+</script>
+</body>
+</html>
